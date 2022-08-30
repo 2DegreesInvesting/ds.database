@@ -9,10 +9,10 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Relational data with dplyr
+# Working with relational data with dplyr
 
 ```{r}
-library(tidyverse, warn.conflicts = FALSE)
+library(dplyr, warn.conflicts = FALSE)
 ```
 
 [Relational data](https://r4ds.had.co.nz/relational-data.html):
@@ -20,15 +20,15 @@ library(tidyverse, warn.conflicts = FALSE)
 * A collection of related tables of data.
 * The relations are always defined between a pair of tables, by the keys.
 
-```{r echo = FALSE}
+```{r}
 # styler: off
-companies = tribble(
+companies <- tribble(
   ~companies_id,                                 ~information,
               1,    "alpha sells solar panels and wind mills",
               2, "beta sells steel and installs solar panels",
 )
 
-categories = tribble(
+categories <- tribble(
   ~companies_id,       ~sector,
               1,      "energy",
               2,  "metallurgy",
@@ -40,18 +40,18 @@ categories = tribble(
 
 ```{r echo = FALSE, message=FALSE}
 library(dm)
+
 database <- dm(companies, categories) |>
   dm_add_pk(companies, companies_id) |>
   dm_add_fk(categories, companies_id, companies)
-database |> dm_draw()
+
+database |> 
+  dm_draw()
 ```
 
 ```{r}
-companies
-
-categories
-
-left_join(companies, categories, by = "companies_id")
+companies |>
+  left_join(categories, by = "companies_id")
 ```
 
 ### Mutating joins
@@ -63,60 +63,66 @@ Add new variables to one data frame from matching observations in another.
 [Inner join](https://r4ds.had.co.nz/relational-data.html#mutating-joins): Drop unmatched rows.
 
 ```{r}
-inner_join(companies, categories, by = "companies_id")
+companies |>
+  inner_join(categories, by = "companies_id")
 ```
 
 [Outter joins](https://r4ds.had.co.nz/relational-data.html#outer-join):
 
-* Keep all rows in `x`
+* Keep all rows in `x` (most common).
 
 ```{r}
-# Most common
-left_join(companies, categories, by = "companies_id")
-
+companies |>
+  left_join(categories, by = "companies_id")
 ```
 
 * Keep all rows in `y`
 
 ```{r}
-left_join(companies, categories, by = "companies_id")
+companies |>
+  left_join(categories, by = "companies_id")
 ```
 
 * Keep all rows in `x` and `y`
 
 ```{r}
-full_join(companies, categories, by = "companies_id")
+companies |>
+  full_join(categories, by = "companies_id")
 ```
 
 * [Duplicate keys](https://r4ds.had.co.nz/relational-data.html#join-matches)
 
 ```{r}
 # Duplicate keys in one table
-companies2 = bind_rows(companies, tibble(companies_id = 1L, information = "abc"))
-left_join(companies2, categories)
+companies2 <- companies |>
+  bind_rows(tibble(companies_id = 1L, information = "abc"))
+
+companies2 |>
+  left_join(categories)
 
 # Duplicate keys in both tables
-categories2 = bind_rows(categories, tibble(companies_id = 1L, sector = "xyz"))
-left_join(companies2, categories2)
+categories2 <- categories |>
+  bind_rows(tibble(companies_id = 1L, sector = "xyz"))
+
+companies2 |>
+  left_join(categories2)
 ```
 
 ### Filtering joins
 
 Affect observations, not variables:
 
-* semi_join(x, y) keeps all observations in x that have a match in y.
+* Keep all observations in `x` that have a match in `y`.
 
 ```{r}
 semi_join(companies, categories)
 ```
 
-* anti_join(x, y) drops all observations in x that have a match in y.
+* Drop all observations in `x` that have a match in `y`.
 
 ```{r}
-# Invalid foreign key
 anti_join(categories, companies)
 ```
-
 
 ### Validating keys to avoid [join problems](https://r4ds.had.co.nz/relational-data.html#join-problems)
 
@@ -136,13 +142,13 @@ categories |>
 * No value of a primary key should be missing.
 
 ```{r}
-companies |> 
+companies |>
   filter(is.na(companies_id))
 ```
 
 * All values of a foreign key should match a value of a primary key.
 
 ```{r}
-# ! Problem
+# ! Problem: Invalid foreign key
 anti_join(categories, companies, by = "companies_id")
 ```
