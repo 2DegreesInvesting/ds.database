@@ -9,13 +9,13 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Introduction to relational data with dplyr
+# Relational data with dplyr
 
 ```{r}
 library(tidyverse, warn.conflicts = FALSE)
 ```
 
-## Relational data
+[Relational data](https://r4ds.had.co.nz/relational-data.html):
 
 * A collection of related tables of data.
 * The relations are always defined between a pair of tables, by the keys.
@@ -29,10 +29,11 @@ companies = tribble(
 )
 
 categories = tribble(
-  ~companies_id,      ~sector,
-              1,     "energy",
-              2, "metallurgy",
-              2,     "energy",
+  ~companies_id,       ~sector,
+              1,      "energy",
+              2,  "metallurgy",
+              2,      "energy",
+              3, "agriculture",
 )
 # styler: on
 ```
@@ -45,58 +46,103 @@ database <- dm(companies, categories) |>
 database |> dm_draw()
 ```
 
-
 ```{r}
 companies
 
 categories
 
-key <- "companies_id"
-left_join(companies, categories, by = key)
+left_join(companies, categories, by = "companies_id")
 ```
 
-Validate.
+### Mutating joins
 
-https://r4ds.had.co.nz/relational-data.html#join-problems
+Add new variables to one data frame from matching observations in another.
+
+--
+
+[Inner join](https://r4ds.had.co.nz/relational-data.html#mutating-joins): Drop unmatched rows.
+
+```{r}
+inner_join(companies, categories, by = "companies_id")
+```
+
+[Outter joins](https://r4ds.had.co.nz/relational-data.html#outer-join):
+
+* Keep all rows in `x`
+
+```{r}
+# Most common
+left_join(companies, categories, by = "companies_id")
+
+```
+
+* Keep all rows in `y`
+
+```{r}
+left_join(companies, categories, by = "companies_id")
+```
+
+* Keep all rows in `x` and `y`
+
+```{r}
+full_join(companies, categories, by = "companies_id")
+```
+
+* [Duplicate keys](https://r4ds.had.co.nz/relational-data.html#join-matches)
+
+```{r}
+# Duplicate keys in one table
+companies2 = bind_rows(companies, tibble(companies_id = 1L, information = "abc"))
+left_join(companies2, categories)
+
+# Duplicate keys in both tables
+categories2 = bind_rows(categories, tibble(companies_id = 1L, sector = "xyz"))
+left_join(companies2, categories2)
+```
+
+### Filtering joins
+
+Affect observations, not variables:
+
+* semi_join(x, y) keeps all observations in x that have a match in y.
+
+```{r}
+semi_join(companies, categories)
+```
+
+* anti_join(x, y) drops all observations in x that have a match in y.
+
+```{r}
+# Invalid foreign key
+anti_join(categories, companies)
+```
+
+
+### Validating keys to avoid [join problems](https://r4ds.had.co.nz/relational-data.html#join-problems)
 
 * All values of a primary key should be unique.
-* No value of a primary key should be missing.
-* All values of a foreign key should match a value of a primary key.
 
 ```{r}
 companies |>
   count(companies_id) |>
   filter(n > 1)
 
+# (!) The `companies_id` column is NOT a primary key of `categories`
 categories |>
   count(companies_id) |>
   filter(n > 1)
 ```
 
+* No value of a primary key should be missing.
 
-TODO: 
+```{r}
+companies |> 
+  filter(is.na(companies_id))
+```
 
-* Introduce toy dataset.
-* Show relationship with dm
+* All values of a foreign key should match a value of a primary key.
 
-## Types of joins
-
-**Mutating join** add new variables to one data frame from matching observations in another.
-
-* Inner
-
-TODO SHOW EXAMPLE WITH TOY DATASET
-
-* Outter
-
-TODO SHOW EXAMPLE WITH TOY DATASET
-
-* Duplicate keys
-
-**Filtering joins** filter observations from one data frame based on whether or not they match an observation in the other table.
-
-TODO SHOW EXAMPLE WITH TOY DATASET
-
-Filtering joins, which filter observations from one data frame based on whether or not they match an observation in the other table.
-
-TODO SHOW EXAMPLE WITH TOY DATASET
+```{r}
+# ! Problem
+anti_join(categories, companies, by = "companies_id")
+```
