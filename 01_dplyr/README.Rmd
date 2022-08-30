@@ -21,21 +21,17 @@ library(dplyr, warn.conflicts = FALSE)
 
 ```{r}
 companies <- tribble(
-  # styler: off
   ~companies_id,                                 ~information,
               1,    "alpha sells solar panels and wind mills",
               2, "beta sells steel and installs solar panels",
-  # styler: on
 )
 
 categories <- tribble(
-  # styler: off
   ~companies_id,       ~sector,
               1,      "energy",
               2,  "metallurgy",
               2,      "energy",
               3, "agriculture",
-  # styler: off
 )
 ```
 
