@@ -15,6 +15,8 @@ knitr::opts_chunk$set(
 library(dplyr, warn.conflicts = FALSE)
 ```
 
+### Overview
+
 [Relational data](https://r4ds.had.co.nz/relational-data.html):
 
 * A collection of related tables of data.
@@ -44,18 +46,29 @@ companies |>
   left_join(categories, by = key)
 ```
 
-A realistic example:
+* A realistic example:
 
 ![](https://d33wubrfki0l68.cloudfront.net/245292d1ea724f6c3fd8a92063dcd7bfb9758d02/5751b/diagrams/relational-nycflights.png)
 
-### Mutating joins
+### Types of joins
 
-Add new variables to one data frame from matching observations in another.
+**Mutating joins** add columns and ...:
+
+* [Inner Join](https://r4ds.had.co.nz/relational-data.html#mutating-joins):
+  * `inner_join()`: Drops unmatched rows.
+* [Outter joins](https://r4ds.had.co.nz/relational-data.html#outer-join):  
+  * `left_join(x, y)`: Keeps all rows in `x` (most common).
+  * `right_join(x, y)`: Keeps all rows in `y`.
+  * `full_join(x, y)`: Keeps all rows in `x` and `y`.
+
+**Filtering joins** affect observations, not variables.
+
+* `semi_join(x, y)`: Keeps all observations in `x` that have a match in `y`.
+* `anti_join(x, y)`: Drops all observations in `x` that have a match in `y`.
 
 --
 
-[Inner join](https://r4ds.had.co.nz/relational-data.html#mutating-joins): Drop
-unmatched rows.
+#### Inner join
 
 ![](https://d33wubrfki0l68.cloudfront.net/3abea0b730526c3f053a3838953c35a0ccbe8980/7f29b/diagrams/join-inner.png)
 
@@ -64,11 +77,7 @@ companies |>
   inner_join(categories, by = "companies_id")
 ```
 
-[Outter joins](https://r4ds.had.co.nz/relational-data.html#outer-join):
-
-* `left_join(x, y)`: Keep all rows in `x` (most common).
-* `right_join(x, y)`: Keep all rows in `y`.
-* `full_join(x, y)`: Keep all rows in `x` and `y`.
+#### Outter joins
 
 ![](https://d33wubrfki0l68.cloudfront.net/9c12ca9e12ed26a7c5d2aa08e36d2ac4fb593f1e/79980/diagrams/join-outer.png)
 
@@ -82,6 +91,25 @@ companies |>
 companies |>
   full_join(categories, by = "companies_id")
 ```
+
+#### Filtering joins
+
+![](https://d33wubrfki0l68.cloudfront.net/028065a7f353a932d70d2dfc82bc5c5966f768ad/85a30/diagrams/join-semi.png)
+
+```{r}
+categories |> 
+  semi_join(companies)
+```
+
+![](https://d33wubrfki0l68.cloudfront.net/f29a85efd53a079cc84c14ba4ba6894e238c3759/c1408/diagrams/join-anti.png)
+
+```{r}
+categories |> 
+  anti_join(companies)
+```
+
+
+### Duplicate keys
 
 * Duplicate keys in one table
 
@@ -107,29 +135,9 @@ companies2 |>
   left_join(categories2)
 ```
 
-### Filtering joins
+### Validating keys
 
-Affect observations, not variables:
-
-* `semi_join(x, y)`: Keep all observations in `x` that have a match in `y`.
-
-![](https://d33wubrfki0l68.cloudfront.net/028065a7f353a932d70d2dfc82bc5c5966f768ad/85a30/diagrams/join-semi.png)
-
-```{r}
-categories |> 
-  semi_join(companies)
-```
-
-* `anti_join(x, y)`: Drop all observations in `x` that have a match in `y`.
-
-![](https://d33wubrfki0l68.cloudfront.net/f29a85efd53a079cc84c14ba4ba6894e238c3759/c1408/diagrams/join-anti.png)
-
-```{r}
-categories |> 
-  anti_join(companies)
-```
-
-### Validating keys to avoid [join problems](https://r4ds.had.co.nz/relational-data.html#join-problems)
+To avoid [join problems](https://r4ds.had.co.nz/relational-data.html#join-problems) you should validate some properties of the keys:
 
 * All values of a primary key should be unique.
 
