@@ -6,10 +6,9 @@ related tables of data.
 
 At the end of this series you will be able to do things like these:
 
--   Understand the main ideas about relational data.
--   Work with relational data with the dplyr package.
--   Work with relational data with the dm package.
--   Work with a lazy, hosted database.
+-   Understand and use relational data with the dplyr package.
+-   Define and use relational data models with the dm package.
+-   Use remote databases.
 
 ## Who is the audience?
 
@@ -26,14 +25,16 @@ Anyone who works with two or more related tables of data.
 
 ## Syllabus
 
-### Introduction to relational data with dplyr
+### Relational data with dplyr
 
-This meetup introduces relational data with dplyr.
+This meetup covers how to work with relational data with dplyr.
 
 Objectives:
 
--   Understand the main ideas about relational data.
--   Work with relational data with the dplyr package.
+-   Understand what is relational data.
+-   Understand and use the different types of joins.
+-   Understand what happens when a key has duplicated values.
+-   Learn how to validate the keys to avoid problems.
 
 ### Next (TBC)
 
@@ -50,3 +51,7 @@ Objectives:
 -   [Relational data](https://r4ds.had.co.nz/relational-data.html).
 -   [The dm package](https://cynkra.github.io/dm/).
 -   [The dbplyr package](https://dbplyr.tidyverse.org/).
+
+## Thanks
+
+Tanks Mirja for motivating me to learn more about relational data.

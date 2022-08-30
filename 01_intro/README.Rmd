@@ -9,7 +9,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Working with relational data with dplyr
+# Relational data with dplyr
 
 ```{r}
 library(dplyr, warn.conflicts = FALSE)
@@ -18,24 +18,34 @@ library(dplyr, warn.conflicts = FALSE)
 [Relational data](https://r4ds.had.co.nz/relational-data.html):
 
 * A collection of related tables of data.
-* The relations are always defined between a pair of tables, by the keys.
 
 ```{r}
-# styler: off
 companies <- tribble(
+  # styler: off
   ~companies_id,                                 ~information,
               1,    "alpha sells solar panels and wind mills",
               2, "beta sells steel and installs solar panels",
+  # styler: on
 )
 
 categories <- tribble(
+  # styler: off
   ~companies_id,       ~sector,
               1,      "energy",
               2,  "metallurgy",
               2,      "energy",
               3, "agriculture",
+  # styler: off
 )
-# styler: on
+```
+
+* The relations are always defined,  between a pair of tables, by the keys.
+
+```{r}
+key  <- "companies_id"
+
+companies |>
+  left_join(categories, by = key)
 ```
 
 ```{r echo = FALSE, message=FALSE}
@@ -49,18 +59,14 @@ database |>
   dm_draw()
 ```
 
-```{r}
-companies |>
-  left_join(categories, by = "companies_id")
-```
-
 ### Mutating joins
 
 Add new variables to one data frame from matching observations in another.
 
 --
 
-[Inner join](https://r4ds.had.co.nz/relational-data.html#mutating-joins): Drop unmatched rows.
+[Inner join](https://r4ds.had.co.nz/relational-data.html#mutating-joins): Drop
+unmatched rows.
 
 ```{r}
 companies |>
@@ -80,7 +86,7 @@ companies |>
 
 ```{r}
 companies |>
-  left_join(categories, by = "companies_id")
+  right_join(categories, by = "companies_id")
 ```
 
 * Keep all rows in `x` and `y`
@@ -115,13 +121,15 @@ Affect observations, not variables:
 * Keep all observations in `x` that have a match in `y`.
 
 ```{r}
-semi_join(companies, categories)
+categories |> 
+  semi_join(companies)
 ```
 
 * Drop all observations in `x` that have a match in `y`.
 
 ```{r}
-anti_join(categories, companies)
+categories |> 
+  anti_join(companies)
 ```
 
 ### Validating keys to avoid [join problems](https://r4ds.had.co.nz/relational-data.html#join-problems)

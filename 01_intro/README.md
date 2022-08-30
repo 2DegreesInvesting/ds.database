@@ -1,5 +1,5 @@
 
-# Working with relational data with dplyr
+# Relational data with dplyr
 
 ``` r
 library(dplyr, warn.conflicts = FALSE)
@@ -8,32 +8,35 @@ library(dplyr, warn.conflicts = FALSE)
 [Relational data](https://r4ds.had.co.nz/relational-data.html):
 
 -   A collection of related tables of data.
--   The relations are always defined between a pair of tables, by the
-    keys.
 
 ``` r
-# styler: off
 companies <- tribble(
+  # styler: off
   ~companies_id,                                 ~information,
               1,    "alpha sells solar panels and wind mills",
               2, "beta sells steel and installs solar panels",
+  # styler: on
 )
 
 categories <- tribble(
+  # styler: off
   ~companies_id,       ~sector,
               1,      "energy",
               2,  "metallurgy",
               2,      "energy",
               3, "agriculture",
+  # styler: off
 )
-# styler: on
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+-   The relations are always defined, between a pair of tables, by the
+    keys.
 
 ``` r
+key  <- "companies_id"
+
 companies |>
-  left_join(categories, by = "companies_id")
+  left_join(categories, by = key)
 #> # A tibble: 3 × 3
 #>   companies_id information                                sector    
 #>          <dbl> <chr>                                      <chr>     
@@ -41,6 +44,8 @@ companies |>
 #> 2            2 beta sells steel and installs solar panels metallurgy
 #> 3            2 beta sells steel and installs solar panels energy
 ```
+
+![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
 ### Mutating joins
 
@@ -83,13 +88,14 @@ companies |>
 
 ``` r
 companies |>
-  left_join(categories, by = "companies_id")
-#> # A tibble: 3 × 3
-#>   companies_id information                                sector    
-#>          <dbl> <chr>                                      <chr>     
-#> 1            1 alpha sells solar panels and wind mills    energy    
-#> 2            2 beta sells steel and installs solar panels metallurgy
-#> 3            2 beta sells steel and installs solar panels energy
+  right_join(categories, by = "companies_id")
+#> # A tibble: 4 × 3
+#>   companies_id information                                sector     
+#>          <dbl> <chr>                                      <chr>      
+#> 1            1 alpha sells solar panels and wind mills    energy     
+#> 2            2 beta sells steel and installs solar panels metallurgy 
+#> 3            2 beta sells steel and installs solar panels energy     
+#> 4            3 <NA>                                       agriculture
 ```
 
 -   Keep all rows in `x` and `y`
@@ -150,19 +156,22 @@ Affect observations, not variables:
 -   Keep all observations in `x` that have a match in `y`.
 
 ``` r
-semi_join(companies, categories)
+categories |> 
+  semi_join(companies)
 #> Joining, by = "companies_id"
-#> # A tibble: 2 × 2
-#>   companies_id information                               
-#>          <dbl> <chr>                                     
-#> 1            1 alpha sells solar panels and wind mills   
-#> 2            2 beta sells steel and installs solar panels
+#> # A tibble: 3 × 2
+#>   companies_id sector    
+#>          <dbl> <chr>     
+#> 1            1 energy    
+#> 2            2 metallurgy
+#> 3            2 energy
 ```
 
 -   Drop all observations in `x` that have a match in `y`.
 
 ``` r
-anti_join(categories, companies)
+categories |> 
+  anti_join(companies)
 #> Joining, by = "companies_id"
 #> # A tibble: 1 × 2
 #>   companies_id sector     
