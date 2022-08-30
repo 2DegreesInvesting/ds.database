@@ -41,7 +41,9 @@ companies |>
 #> 3            2 beta sells steel and installs solar panels energy
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+A realistic example:
+
+![](https://d33wubrfki0l68.cloudfront.net/245292d1ea724f6c3fd8a92063dcd7bfb9758d02/5751b/diagrams/relational-nycflights.png)
 
 ### Mutating joins
 
@@ -53,6 +55,8 @@ another.
 [Inner
 join](https://r4ds.had.co.nz/relational-data.html#mutating-joins): Drop
 unmatched rows.
+
+![](https://d33wubrfki0l68.cloudfront.net/3abea0b730526c3f053a3838953c35a0ccbe8980/7f29b/diagrams/join-inner.png)
 
 ``` r
 companies |>
@@ -67,7 +71,11 @@ companies |>
 
 [Outter joins](https://r4ds.had.co.nz/relational-data.html#outer-join):
 
--   Keep all rows in `x` (most common).
+-   `left_join(x, y)`: Keep all rows in `x` (most common).
+-   `right_join(x, y)`: Keep all rows in `y`.
+-   `full_join(x, y)`: Keep all rows in `x` and `y`.
+
+![](https://d33wubrfki0l68.cloudfront.net/9c12ca9e12ed26a7c5d2aa08e36d2ac4fb593f1e/79980/diagrams/join-outer.png)
 
 ``` r
 companies |>
@@ -78,11 +86,7 @@ companies |>
 #> 1            1 alpha sells solar panels and wind mills    energy    
 #> 2            2 beta sells steel and installs solar panels metallurgy
 #> 3            2 beta sells steel and installs solar panels energy
-```
 
--   Keep all rows in `y`
-
-``` r
 companies |>
   right_join(categories, by = "companies_id")
 #> # A tibble: 4 × 3
@@ -92,11 +96,7 @@ companies |>
 #> 2            2 beta sells steel and installs solar panels metallurgy 
 #> 3            2 beta sells steel and installs solar panels energy     
 #> 4            3 <NA>                                       agriculture
-```
 
--   Keep all rows in `x` and `y`
-
-``` r
 companies |>
   full_join(categories, by = "companies_id")
 #> # A tibble: 4 × 3
@@ -108,11 +108,11 @@ companies |>
 #> 4            3 <NA>                                       agriculture
 ```
 
--   [Duplicate
-    keys](https://r4ds.had.co.nz/relational-data.html#join-matches)
+-   Duplicate keys in one table
+
+![](https://d33wubrfki0l68.cloudfront.net/6faac3e996263827cb57fc5803df6192541a9a4b/c7d74/diagrams/join-one-to-many.png)
 
 ``` r
-# Duplicate keys in one table
 companies2 <- companies |>
   bind_rows(tibble(companies_id = 1L, information = "abc"))
 
@@ -126,8 +126,13 @@ companies2 |>
 #> 2            2 beta sells steel and installs solar panels metallurgy
 #> 3            2 beta sells steel and installs solar panels energy    
 #> 4            1 abc                                        energy
+```
 
-# Duplicate keys in both tables
+-   Duplicate keys in both tables
+
+![](https://d33wubrfki0l68.cloudfront.net/d37530bbf7749f48c02684013ae72b2996b07e25/37510/diagrams/join-many-to-many.png)
+
+``` r
 categories2 <- categories |>
   bind_rows(tibble(companies_id = 1L, sector = "xyz"))
 
@@ -149,7 +154,10 @@ companies2 |>
 
 Affect observations, not variables:
 
--   Keep all observations in `x` that have a match in `y`.
+-   `semi_join(x, y)`: Keep all observations in `x` that have a match in
+    `y`.
+
+![](https://d33wubrfki0l68.cloudfront.net/028065a7f353a932d70d2dfc82bc5c5966f768ad/85a30/diagrams/join-semi.png)
 
 ``` r
 categories |> 
@@ -163,7 +171,10 @@ categories |>
 #> 3            2 energy
 ```
 
--   Drop all observations in `x` that have a match in `y`.
+-   `anti_join(x, y)`: Drop all observations in `x` that have a match in
+    `y`.
+
+![](https://d33wubrfki0l68.cloudfront.net/f29a85efd53a079cc84c14ba4ba6894e238c3759/c1408/diagrams/join-anti.png)
 
 ``` r
 categories |> 
