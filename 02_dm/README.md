@@ -152,3 +152,5 @@ dm3 |>
   dm_examine_constraints()
 #> ℹ All constraints satisfied.
 ```
+
+Learn more: <https://cynkra.github.io/dm/>
