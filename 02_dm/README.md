@@ -15,25 +15,21 @@ Example dataset with two tables.
 
 ``` r
 companies <- tribble(
-  # styler: off
   ~companies_id,                                 ~information,
               1,    "alpha sells solar panels and wind mills",
               2, "beta sells steel and installs solar panels",
-  # styler: on
 )
 
 categories <- tribble(
-  # styler: off
   ~companies_id,       ~sector,
               1,      "energy",
               2,  "metallurgy",
               2,      "energy",
-              3, "agriculture",
-  # styler: on
+              3, "agriculture",  # Bad
 )
 ```
 
-A data model (dm) is like a named list with special features:
+A data model (dm) is like a named list.
 
 ``` r
 dm <- dm(companies, categories)
@@ -54,6 +50,8 @@ dm$categories
 #> 3            2 energy     
 #> 4            3 agriculture
 ```
+
+But also has with special features:
 
 -   It can store the relationships between tables via primary and
     foreign keys.
@@ -92,8 +90,8 @@ dm2 |>
 
 -   It makes it easy to examine the constraints of you data:
 
-    -   Each value of a foreign key should be unique.
-    -   Each value of a foreign key should not be missing.
+    -   Each value of a primaty key should be unique.
+    -   Each value of a primaty key should be not missing.
     -   Each value of a foreign key should match a value in its primary
         key.
 
@@ -108,6 +106,7 @@ dm2 |>
 
 ``` r
 # Expect no duplicates
+# Good
 dm$companies |>
   count(companies_id) |>
   filter(n > 1)
@@ -115,13 +114,14 @@ dm$companies |>
 #> # … with 2 variables: companies_id <dbl>, n <int>
 
 # Expect no missing values
+# Good
 dm$companies |>
   filter(is.na(companies_id))
 #> # A tibble: 0 × 2
 #> # … with 2 variables: companies_id <dbl>, information <chr>
 
 # Expect no miss-match
-# Problem!
+# Bad
 categories |>
   anti_join(companies, by = "companies_id")
 #> # A tibble: 1 × 2
@@ -134,7 +134,7 @@ categories |>
     dplyr’s.
 
 ``` r
-# Fix constraints by excluding the bad row
+# Exclude the bad row
 dm3 <- dm2 |>
   dm_filter(categories = (companies_id != 3))
 
