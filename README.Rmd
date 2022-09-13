@@ -46,9 +46,16 @@ Objectives:
 * Understand what happens when a key has duplicated values.
 * Learn how to validate the keys to avoid problems.
 
+### Work with relational data with the dm package
+
+This meetup covers how to work with relational package with the dm package.
+
+Objectives:
+
+* Create, visualize, check, and use complex datasets.
+
 ### Next (TBC)
 
-* Work with relational data with the dm package.
 * Work with a lazy, hosted database. 
 
 ## Resources

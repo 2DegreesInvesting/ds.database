@@ -122,3 +122,4 @@ dm3 |>
 dm3 |>
   dm_flatten_to_tbl(categories, .recursive = TRUE)
 ```
+
