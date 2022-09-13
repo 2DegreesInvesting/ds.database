@@ -134,8 +134,20 @@ categories |>
 
 ``` r
 dm2 |>
-  dm_flatten_to_tbl(categories, .recursive = TRUE)
+  dm_flatten_to_tbl(categories)
 #> # A tibble: 4 × 3
+#>   companies_id sector      information                               
+#>          <dbl> <chr>       <chr>                                     
+#> 1            1 energy      alpha sells solar panels and wind mills   
+#> 2            2 metallurgy  beta sells steel and installs solar panels
+#> 3            2 energy      beta sells steel and installs solar panels
+#> 4            3 agriculture <NA>
+
+dm2 |> 
+  dm_zoom_to(categories) |> 
+  left_join(companies)
+#> # Zoomed table: categories
+#> # A tibble:     4 × 3
 #>   companies_id sector      information                               
 #>          <dbl> <chr>       <chr>                                     
 #> 1            1 energy      alpha sells solar panels and wind mills   

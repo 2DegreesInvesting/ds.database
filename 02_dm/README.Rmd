@@ -109,7 +109,11 @@ categories |>
 
 ```{r}
 dm2 |>
-  dm_flatten_to_tbl(categories, .recursive = TRUE)
+  dm_flatten_to_tbl(categories)
+
+dm2 |> 
+  dm_zoom_to(categories) |> 
+  left_join(companies)
 ```
 
 * It allows you to manipulate tables with functions similar to dplyr's.
