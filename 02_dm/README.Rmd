@@ -1,8 +1,10 @@
 ---
 output: github_document
+editor_options: 
+  chunk_output_type: console
 ---
 
-```{r}
+```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
@@ -11,14 +13,17 @@ knitr::opts_chunk$set(
 
 # Relational data with dm
 
-Packages.
+### The dm package
+
+* It makes it easy create, visualize, check, and flatten complex datasets.
+* It plays well with dplyr.
 
 ```{r}
 library(dm, warn.conflicts = FALSE)
 library(dplyr, warn.conflicts = FALSE)
 ```
 
-Data.
+### Example dataset
 
 ```{r}
 companies <- tribble(
@@ -40,69 +45,78 @@ categories <- tribble(
 )
 ```
 
-A data model (dm) is like a list.
+### A date model (dm) is like a special list
 
 ```{r}
-database = dm(companies, categories)
+dm <- dm(companies, categories)
 
-database$companies
+dm$companies
 
-database$categories
+dm$categories
+
+dm
 ```
 
-For example, using the dm as a list you may examine keys constrains with dplyr.
+You can define the relationship between tables with primary and foreign keys.
 
 ```{r}
-# No primary-key value should be duplicated
-database$companies |>
+dm2 <- dm |>
+  dm_add_pk(companies, companies_id) |>
+  dm_add_fk(categories, companies_id, companies)
+
+dm2
+```
+
+### It makes it easy to draw and understand the relationship between tables
+
+```{r}
+dm2 |>
+  dm_draw()
+```
+
+### It makes it easy to examine the constraints of you data
+
+* Each value of a foreign key should be unique.
+* Each value of a foreign key should not be missing.
+* Each value of a foreign key should match a value in its primary key.
+
+```{r}
+dm2 |>
+  dm_examine_constraints()
+```
+
+(Doing this "by hand" with dplyr is a lot harder.)
+
+```{r}
+# Expect no duplicates
+dm$companies |>
   count(companies_id) |>
   filter(n > 1)
 
-# No primary-key value should be missing
-database$companies |>
+# Expect no missing values
+dm$companies |>
   filter(is.na(companies_id))
 
-# Each foreign-key value should match a primary key value
+# Expect no miss-match
 # Problem!
 categories |>
   anti_join(companies, by = "companies_id")
-
-# Fix
-categories |>
-  filter(companies_id != 3) |> 
-  anti_join(companies, by = "companies_id")
 ```
 
-But the dm has dedicated features that make it easier to work with it.
+### It helps you maninpulate tables in a way similar to dplyr
 
 ```{r}
-database
-
-# Add the primary key (pk) and the foreign key (fk)
-database2 = database |>
-  dm_add_pk(companies, companies_id) |>
-  dm_add_fk(categories, companies_id, companies)
-database2
-
-# Examine constraints
-database2 |>
-  dm_examine_constraints()
-# Fix
-database3 = database2 |>
+# Fix constraints
+dm3 <- dm2 |>
   dm_filter(categories = (companies_id != 3))
-database3 |>
-  dm_examine_constraints()
 
-# Other cool things you can do
-database3 |>
-  dm_flatten_to_tbl(categories, .recursive = TRUE)
+dm3 |>
+  dm_examine_constraints()
 ```
 
-You may persist the dm by saving it to an R object.
+### It makes it easy to join multiple tables
 
 ```{r}
-path = tempfile(fileext = ".rds")
-saveRDS(database3, path)
-# And later read it back into R
-readRDS(path)
+dm3 |>
+  dm_flatten_to_tbl(categories, .recursive = TRUE)
 ```
