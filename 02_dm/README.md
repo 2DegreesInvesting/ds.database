@@ -1,18 +1,17 @@
 
 # Relational data with dm
 
-### The dm package
+The dm package:
 
--   It makes it easy create, visualize, check, and flatten complex
-    datasets.
--   It plays well with dplyr.
+-   Makes it easy to create, visualize, check, and use complex datasets.
+-   Plays well with dplyr.
 
 ``` r
 library(dm, warn.conflicts = FALSE)
 library(dplyr, warn.conflicts = FALSE)
 ```
 
-### Example dataset
+Example dataset with two tables.
 
 ``` r
 companies <- tribble(
@@ -34,7 +33,7 @@ categories <- tribble(
 )
 ```
 
-### A date model (dm) is like a special list
+A data model (dm) is like a named list with special features:
 
 ``` r
 dm <- dm(companies, categories)
@@ -54,23 +53,25 @@ dm$categories
 #> 2            2 metallurgy 
 #> 3            2 energy     
 #> 4            3 agriculture
+```
 
+-   It can store the relationships between tables via primary and
+    foreign keys.
+
+``` r
+# Before
 dm
 #> ── Metadata ────────────────────────────────────────────────────────────────────
 #> Tables: `companies`, `categories`
 #> Columns: 4
 #> Primary keys: 0
 #> Foreign keys: 0
-```
 
-You can define the relationship between tables with primary and foreign
-keys.
-
-``` r
 dm2 <- dm |>
   dm_add_pk(companies, companies_id) |>
   dm_add_fk(categories, companies_id, companies)
 
+# After
 dm2
 #> ── Metadata ────────────────────────────────────────────────────────────────────
 #> Tables: `companies`, `categories`
@@ -79,7 +80,8 @@ dm2
 #> Foreign keys: 1
 ```
 
-### It makes it easy to draw and understand the relationship between tables
+-   It makes it easy to draw and understand the relationship between
+    tables.
 
 ``` r
 dm2 |>
@@ -88,11 +90,12 @@ dm2 |>
 
 ![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
-### It makes it easy to examine the constraints of you data
+-   It makes it easy to examine the constraints of you data:
 
--   Each value of a foreign key should be unique.
--   Each value of a foreign key should not be missing.
--   Each value of a foreign key should match a value in its primary key.
+    -   Each value of a foreign key should be unique.
+    -   Each value of a foreign key should not be missing.
+    -   Each value of a foreign key should match a value in its primary
+        key.
 
 ``` r
 dm2 |>
@@ -127,10 +130,11 @@ categories |>
 #> 1            3 agriculture
 ```
 
-### It helps you maninpulate tables in a way similar to dplyr
+-   It allows you to manipulate tables with functions similar to
+    dplyr’s.
 
 ``` r
-# Fix constraints
+# Fix constraints by excluding the bad row
 dm3 <- dm2 |>
   dm_filter(categories = (companies_id != 3))
 
@@ -139,7 +143,7 @@ dm3 |>
 #> ℹ All constraints satisfied.
 ```
 
-### It makes it easy to join multiple tables
+-   It makes it easy to join multiple tables.
 
 ``` r
 dm3 |>
