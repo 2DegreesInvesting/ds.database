@@ -154,3 +154,11 @@ dm3 |>
 ```
 
 Learn more: <https://cynkra.github.io/dm/>
+
+### Questions
+
+Can dm check:
+
+1.  constraints in columns other than the keys? E.g. allow only 1 or 0.
+2.  column type?
+3.  unique and composite unique constraints?
