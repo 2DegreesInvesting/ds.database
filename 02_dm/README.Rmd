@@ -76,8 +76,8 @@ dm2 |>
 
 * It makes it easy to examine the constraints of you data:
 
-    * Each value of a primaty key should be unique.
-    * Each value of a primaty key should be not missing.
+    * Each value of a primary key should be unique.
+    * Each value of a primary key should be not missing.
     * Each value of a foreign key should match a value in its primary key.
 
 ```{r}
@@ -90,51 +90,42 @@ dm2 |>
 ```{r}
 # Expect no duplicates
 # Good
-dm$companies |>
+dm2$companies |>
   count(companies_id) |>
   filter(n > 1)
 
 # Expect no missing values
 # Good
-dm$companies |>
+dm2$companies |>
   filter(is.na(companies_id))
 
 # Expect no miss-match
 # Bad
-categories |>
-  anti_join(companies, by = "companies_id")
+dm2$categories |>
+  anti_join(dm2$companies, by = "companies_id")
 ```
 
 * It makes it easy to join multiple tables.
 
 ```{r}
 dm2 |>
-  dm_flatten_to_tbl(categories)
+  dm_flatten_to_tbl(.start = categories)
 
 dm2 |> 
   dm_zoom_to(categories) |> 
   left_join(companies)
 ```
 
-* It allows you to manipulate tables with functions similar to dplyr's.
+* It allows you to manipulate tables with functions from dplyr or similar.
 
 ```{r}
 # Exclude the bad row
-dm3 <- dm2 |>
-  dm_filter(categories = (companies_id != 3))
-
-dm3 |>
-  dm_examine_constraints()
-
-# Or
-dm4 <- dm2 |> 
+dm2 |>
   dm_zoom_to(categories) |> 
-  # Exclude the bad row
-  filter(companies_id != 3) |> 
-  dm_insert_zoomed("categories2") |> 
-  dm_select_tbl(companies, categories2)
-dm4
+  filter(companies_id != 3)
 
-dm4 |> 
-  dm_examine_constraints()
+# Same
+dm2 |> 
+  dm_filter(categories = (companies_id != 3)) |> 
+  dm_zoom_to(categories)
 ```

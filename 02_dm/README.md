@@ -90,8 +90,8 @@ dm2 |>
 
 -   It makes it easy to examine the constraints of you data:
 
-    -   Each value of a primaty key should be unique.
-    -   Each value of a primaty key should be not missing.
+    -   Each value of a primary key should be unique.
+    -   Each value of a primary key should be not missing.
     -   Each value of a foreign key should match a value in its primary
         key.
 
@@ -107,7 +107,7 @@ dm2 |>
 ``` r
 # Expect no duplicates
 # Good
-dm$companies |>
+dm2$companies |>
   count(companies_id) |>
   filter(n > 1)
 #> # A tibble: 0 × 2
@@ -115,15 +115,15 @@ dm$companies |>
 
 # Expect no missing values
 # Good
-dm$companies |>
+dm2$companies |>
   filter(is.na(companies_id))
 #> # A tibble: 0 × 2
 #> # … with 2 variables: companies_id <dbl>, information <chr>
 
 # Expect no miss-match
 # Bad
-categories |>
-  anti_join(companies, by = "companies_id")
+dm2$categories |>
+  anti_join(dm2$companies, by = "companies_id")
 #> # A tibble: 1 × 2
 #>   companies_id sector     
 #>          <dbl> <chr>      
@@ -134,7 +134,7 @@ categories |>
 
 ``` r
 dm2 |>
-  dm_flatten_to_tbl(categories)
+  dm_flatten_to_tbl(.start = categories)
 #> # A tibble: 4 × 3
 #>   companies_id sector      information                               
 #>          <dbl> <chr>       <chr>                                     
@@ -156,33 +156,31 @@ dm2 |>
 #> 4            3 agriculture <NA>
 ```
 
--   It allows you to manipulate tables with functions similar to
-    dplyr’s.
+-   It allows you to manipulate tables with functions from dplyr or
+    similar.
 
 ``` r
 # Exclude the bad row
-dm3 <- dm2 |>
-  dm_filter(categories = (companies_id != 3))
-
-dm3 |>
-  dm_examine_constraints()
-#> ℹ All constraints satisfied.
-
-# Or
-dm4 <- dm2 |> 
+dm2 |>
   dm_zoom_to(categories) |> 
-  # Exclude the bad row
-  filter(companies_id != 3) |> 
-  dm_insert_zoomed("categories2") |> 
-  dm_select_tbl(companies, categories2)
-dm4
-#> ── Metadata ────────────────────────────────────────────────────────────────────
-#> Tables: `companies`, `categories2`
-#> Columns: 4
-#> Primary keys: 1
-#> Foreign keys: 1
+  filter(companies_id != 3)
+#> # Zoomed table: categories
+#> # A tibble:     3 × 2
+#>   companies_id sector    
+#>          <dbl> <chr>     
+#> 1            1 energy    
+#> 2            2 metallurgy
+#> 3            2 energy
 
-dm4 |> 
-  dm_examine_constraints()
-#> ℹ All constraints satisfied.
+# Same
+dm2 |> 
+  dm_filter(categories = (companies_id != 3)) |> 
+  dm_zoom_to(categories)
+#> # Zoomed table: categories
+#> # A tibble:     3 × 2
+#>   companies_id sector    
+#>          <dbl> <chr>     
+#> 1            1 energy    
+#> 2            2 metallurgy
+#> 3            2 energy
 ```
