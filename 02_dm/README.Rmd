@@ -56,14 +56,10 @@ But also has with special features:
 * It can store the relationships between tables via primary and foreign keys.
 
 ```{r}
-# Before
-dm
-
 dm2 <- dm |>
   dm_add_pk(companies, companies_id) |>
   dm_add_fk(categories, companies_id, companies)
 
-# After
 dm2
 ```
 
@@ -115,13 +111,15 @@ dm2 |>
 * It allows you to manipulate tables with functions from dplyr or similar.
 
 ```{r}
-# Exclude the bad row
-dm2 |>
+dm3 <- dm2 |>
   dm_zoom_to(categories) |> 
-  filter(companies_id != 3)
+  filter(companies_id != 3) |> 
+  dm_update_zoomed()
 
 # Same
-dm2 |> 
-  dm_filter(categories = (companies_id != 3)) |> 
-  dm_zoom_to(categories)
+dm3 <- dm2 |> 
+  dm_filter(categories = (companies_id != 3))
+
+dm3 |> 
+  dm_examine_constraints()
 ```

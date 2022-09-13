@@ -57,19 +57,10 @@ But also has with special features:
     foreign keys.
 
 ``` r
-# Before
-dm
-#> ── Metadata ────────────────────────────────────────────────────────────────────
-#> Tables: `companies`, `categories`
-#> Columns: 4
-#> Primary keys: 0
-#> Foreign keys: 0
-
 dm2 <- dm |>
   dm_add_pk(companies, companies_id) |>
   dm_add_fk(categories, companies_id, companies)
 
-# After
 dm2
 #> ── Metadata ────────────────────────────────────────────────────────────────────
 #> Tables: `companies`, `categories`
@@ -134,20 +125,8 @@ dm2$categories |>
 
 ``` r
 dm2 |>
-  dm_flatten_to_tbl(.start = categories)
+  dm_flatten_to_tbl(.start = categories, .recursive = TRUE)
 #> # A tibble: 4 × 3
-#>   companies_id sector      information                               
-#>          <dbl> <chr>       <chr>                                     
-#> 1            1 energy      alpha sells solar panels and wind mills   
-#> 2            2 metallurgy  beta sells steel and installs solar panels
-#> 3            2 energy      beta sells steel and installs solar panels
-#> 4            3 agriculture <NA>
-
-dm2 |> 
-  dm_zoom_to(categories) |> 
-  left_join(companies)
-#> # Zoomed table: categories
-#> # A tibble:     4 × 3
 #>   companies_id sector      information                               
 #>          <dbl> <chr>       <chr>                                     
 #> 1            1 energy      alpha sells solar panels and wind mills   
@@ -160,27 +139,16 @@ dm2 |>
     similar.
 
 ``` r
-# Exclude the bad row
-dm2 |>
+dm3 <- dm2 |>
   dm_zoom_to(categories) |> 
-  filter(companies_id != 3)
-#> # Zoomed table: categories
-#> # A tibble:     3 × 2
-#>   companies_id sector    
-#>          <dbl> <chr>     
-#> 1            1 energy    
-#> 2            2 metallurgy
-#> 3            2 energy
+  filter(companies_id != 3) |> 
+  dm_update_zoomed()
 
 # Same
-dm2 |> 
-  dm_filter(categories = (companies_id != 3)) |> 
-  dm_zoom_to(categories)
-#> # Zoomed table: categories
-#> # A tibble:     3 × 2
-#>   companies_id sector    
-#>          <dbl> <chr>     
-#> 1            1 energy    
-#> 2            2 metallurgy
-#> 3            2 energy
+dm3 <- dm2 |> 
+  dm_filter(categories = (companies_id != 3))
+
+dm3 |> 
+  dm_examine_constraints()
+#> ℹ All constraints satisfied.
 ```
