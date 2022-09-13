@@ -109,11 +109,7 @@ dm2$categories |>
 
 ```{r}
 dm2 |>
-  dm_flatten_to_tbl(.start = categories)
-
-dm2 |> 
-  dm_zoom_to(categories) |> 
-  left_join(companies)
+  dm_flatten_to_tbl(.start = categories, .recursive = TRUE)
 ```
 
 * It allows you to manipulate tables with functions from dplyr or similar.
