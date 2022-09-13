@@ -130,6 +130,20 @@ categories |>
 #> 1            3 agriculture
 ```
 
+-   It makes it easy to join multiple tables.
+
+``` r
+dm2 |>
+  dm_flatten_to_tbl(categories, .recursive = TRUE)
+#> # A tibble: 4 × 3
+#>   companies_id sector      information                               
+#>          <dbl> <chr>       <chr>                                     
+#> 1            1 energy      alpha sells solar panels and wind mills   
+#> 2            2 metallurgy  beta sells steel and installs solar panels
+#> 3            2 energy      beta sells steel and installs solar panels
+#> 4            3 agriculture <NA>
+```
+
 -   It allows you to manipulate tables with functions similar to
     dplyr’s.
 
@@ -141,17 +155,22 @@ dm3 <- dm2 |>
 dm3 |>
   dm_examine_constraints()
 #> ℹ All constraints satisfied.
-```
 
--   It makes it easy to join multiple tables.
+# Or
+dm4 <- dm2 |> 
+  dm_zoom_to(categories) |> 
+  # Exclude the bad row
+  filter(companies_id != 3) |> 
+  dm_insert_zoomed("categories2") |> 
+  dm_select_tbl(companies, categories2)
+dm4
+#> ── Metadata ────────────────────────────────────────────────────────────────────
+#> Tables: `companies`, `categories2`
+#> Columns: 4
+#> Primary keys: 1
+#> Foreign keys: 1
 
-``` r
-dm3 |>
-  dm_flatten_to_tbl(categories, .recursive = TRUE)
-#> # A tibble: 3 × 3
-#>   companies_id sector     information                               
-#>          <dbl> <chr>      <chr>                                     
-#> 1            1 energy     alpha sells solar panels and wind mills   
-#> 2            2 metallurgy beta sells steel and installs solar panels
-#> 3            2 energy     beta sells steel and installs solar panels
+dm4 |> 
+  dm_examine_constraints()
+#> ℹ All constraints satisfied.
 ```
