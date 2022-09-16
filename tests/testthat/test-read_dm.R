@@ -35,3 +35,11 @@ test_that("has the expected column types (3)", {
   dm$categories$sector |>
     expect_type(pull_from_dictionary("categories", "sector", "type"))
 })
+
+test_that("in `companies`, `companies_id` must be unique", {
+  required = pull_from_dictionary("companies", "companies_id", "enforce_unique")
+  expect_equal(required, FALSE)
+
+  dm = read_dm(test_path("db"))
+  expect_equal(anyDuplicated(dm$companies$companies_id) > 0L, FALSE)
+})
