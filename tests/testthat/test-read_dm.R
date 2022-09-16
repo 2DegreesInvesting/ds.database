@@ -35,4 +35,3 @@ test_that("has the expected column types (3)", {
   dm$categories$sector |>
     expect_type(pull_from_dictionary("categories", "sector", "type"))
 })
-

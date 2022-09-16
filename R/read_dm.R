@@ -1,8 +1,8 @@
-read_dm = function(dir) {
-  companies = path(dir, "companies.csv") |>
+read_dm <- function(dir) {
+  companies <- path(dir, "companies.csv") |>
     read_csv(col_types = cols_companies())
 
-  categories = path(dir, "categories.csv") |>
+  categories <- path(dir, "categories.csv") |>
     read_csv(col_types = cols_categories())
 
   dm(companies, categories) |>
