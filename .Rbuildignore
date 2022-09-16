@@ -1,3 +1,7 @@
 ^ds\.database\.Rproj$
 ^\.Rproj\.user$
 ^data-raw$
+^01_dplyr$
+^02_dm$
+^03_qa$
+^03_remote$
