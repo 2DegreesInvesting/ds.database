@@ -38,8 +38,9 @@ test_that("has the expected column types (3)", {
 
 test_that("in `companies`, `companies_id` must be unique", {
   required = pull_from_dictionary("companies", "companies_id", "enforce_unique")
-  expect_equal(required, FALSE)
+  expect_equal(required, TRUE)
 
   dm = read_dm(test_path("db"))
-  expect_equal(anyDuplicated(dm$companies$companies_id) > 0L, FALSE)
+  is_unique = anyDuplicated(dm$companies$companies_id) == 0L
+  expect_equal(is_unique, TRUE)
 })
