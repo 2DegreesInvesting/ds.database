@@ -1,0 +1,53 @@
+---
+output: github_document
+---
+
+```{r}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Remote databases
+
+Packages.
+
+```{r}
+library(dm, warn.conflicts = FALSE)
+library(dplyr, warn.conflicts = FALSE)
+library(here)
+```
+
+Data.
+
+```{r}
+companies = here("data-raw", "companies.csv") |> 
+  readr::read_csv(col_types = "cc")
+database <- dm(companies, categories) |>
+  dm_add_pk(companies, companies_id) |>
+  dm_add_fk(categories, companies_id, companies)
+
+# Check the primary and foreign keys meet expected contraints
+database |> dm_examine_constraints()
+
+# Store the data model as an R object
+database |> saveRDS(here("03_remote", "database.rds"))
+```
+
+
+```{r}
+
+
+# Or you may save it to a remote database
+path <- tempfile(fileext = ".sqlite")
+connection <- DBI::dbConnect(RSQLite::SQLite(), dbname = path)
+connection
+
+connection |>
+  copy_dm_to(database, temporary = FALSE)
+
+connection |> DBI::dbListTables()
+tbl(connection, "companies")
+tbl(connection, "categories")
+```
