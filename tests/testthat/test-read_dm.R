@@ -22,15 +22,15 @@ test_that("has the expected column types (3)", {
   dm = read_dm(test_path("db"))
 
   dm$companies$companies_id |>
-    expect_type(dictionary_pull("companies", "companies_id", "type"))
+    expect_type(pull_from_dictionary("companies", "companies_id", "type"))
 
   dm$companies$information |>
-    expect_type(dictionary_pull("companies", "information", "type"))
+    expect_type(pull_from_dictionary("companies", "information", "type"))
 
   dm$categories$companies_id |>
-    expect_type(dictionary_pull("categories", "companies_id", "type"))
+    expect_type(pull_from_dictionary("categories", "companies_id", "type"))
 
   dm$categories$sector |>
-    expect_type(dictionary_pull("categories", "sector", "type"))
+    expect_type(pull_from_dictionary("categories", "sector", "type"))
 })
 
