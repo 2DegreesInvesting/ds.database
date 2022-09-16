@@ -1,13 +1,20 @@
 
-# Use case: Maintaining a relatively small database in R
+# Use case: Main\*taining a simple, robust, database in R
 
--   An accessible .csv backend.
--   Robust and user friendly front end.
--   Developer tools to check requirements.
--   User-facing helpers.
--   Quality assurance from non-develpoers.
--   Gathering requirements.
--   Translating requirements to unit tests.
--   Documenting datasets.
--   Release model: Semantic versioning, releasing code and attaching
-    data.
+Few and popular tools:
+
+-   Spreadsheets:
+
+    -   to store the raw data,
+    -   to gather requirements,
+    -   to document the data.
+
+-   R:
+
+    -   to collect and wrangle raw data,
+    -   to define the data model and test requirements,
+    -   to build user interfaces.
+
+-   Git to track versions and semantically tag releases.
+
+-   GitHub to share code and data.
