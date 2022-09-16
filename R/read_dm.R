@@ -5,8 +5,6 @@ read_dm = function(dir) {
   categories = path(dir, "categories.csv") |>
     read_csv(col_types = cols_categories())
 
-  companies |> dm::check_key(companies_id)
-  categories |> dm::check_key()
   dm(companies, categories) |>
     dm_add_pk(companies, companies_id) |>
     dm_add_fk(categories, companies_id, companies)
