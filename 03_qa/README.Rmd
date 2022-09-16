@@ -2,52 +2,23 @@
 output: github_document
 ---
 
-```{r}
+```{r setup, include=FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
 ```
 
-# Remote databases
+# Use case: Maintaining a relatively small database in R
 
-Packages.
+Focus on QA, maintenability, simplicity.
 
-```{r}
-library(dm, warn.conflicts = FALSE)
-library(dplyr, warn.conflicts = FALSE)
-library(here)
-```
-
-Data.
-
-```{r}
-companies = here("data-raw", "companies.csv") |> 
-  readr::read_csv(col_types = "cc")
-database <- dm(companies, categories) |>
-  dm_add_pk(companies, companies_id) |>
-  dm_add_fk(categories, companies_id, companies)
-
-# Check the primary and foreign keys meet expected contraints
-database |> dm_examine_constraints()
-
-# Store the data model as an R object
-database |> saveRDS(here("03_remote", "database.rds"))
-```
-
-
-```{r}
-
-
-# Or you may save it to a remote database
-path <- tempfile(fileext = ".sqlite")
-connection <- DBI::dbConnect(RSQLite::SQLite(), dbname = path)
-connection
-
-connection |>
-  copy_dm_to(database, temporary = FALSE)
-
-connection |> DBI::dbListTables()
-tbl(connection, "companies")
-tbl(connection, "categories")
-```
+* An accessible .csv backend.
+* Robust and user friendly front end.
+* Developer tools to check requirements.
+* User-facing helpers.
+* Quality assurance from non-develpoers.
+* Gathering requirements.
+* Translating requirements to unit tests.
+* Documenting datasets.
+* Release model: Semantic versioning, releasing code and attaching data.
