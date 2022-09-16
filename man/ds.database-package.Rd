@@ -4,12 +4,12 @@
 \name{ds.database-package}
 \alias{ds.database}
 \alias{ds.database-package}
-\title{ds.database: What the Package Does (One Line, Title Case)}
+\title{ds.database: Data Science Incubator Series About Working With Relational Data}
 \description{
-What the package does (one paragraph).
+Data science incubator series about working with relational data.
 }
 \author{
-\strong{Maintainer}: First Last \email{first.last@example.com} (\href{https://orcid.org/YOUR-ORCID-ID}{ORCID})
+\strong{Maintainer}: Mauro Lepore \email{maurolepore@gmail.com}
 
 }
 \keyword{internal}
