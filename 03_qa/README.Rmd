@@ -9,13 +9,13 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Use case: Main*taining a simple, robust, database in R
+# Use case: Maintaining a simple, robust, database in R
 
 Few and popular tools:
 
 * Spreadsheets:
     * to store the raw data,
-    * to gather requirements,
+    * to gather requirements,`
     * to document the data.
 
 * R:
