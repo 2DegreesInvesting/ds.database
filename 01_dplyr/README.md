@@ -5,6 +5,8 @@
 library(dplyr, warn.conflicts = FALSE)
 ```
 
+### Overview
+
 [Relational data](https://r4ds.had.co.nz/relational-data.html):
 
 -   A collection of related tables of data.
@@ -41,18 +43,35 @@ companies |>
 #> 3            2 beta sells steel and installs solar panels energy
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+-   A realistic example:
 
-### Mutating joins
+![](https://d33wubrfki0l68.cloudfront.net/245292d1ea724f6c3fd8a92063dcd7bfb9758d02/5751b/diagrams/relational-nycflights.png)
 
-Add new variables to one data frame from matching observations in
-another.
+### Types of joins
+
+**Mutating joins** add columns and …:
+
+-   [Inner
+    Join](https://r4ds.had.co.nz/relational-data.html#mutating-joins):
+    -   `inner_join()`: Drops unmatched rows.
+-   [Outter
+    joins](https://r4ds.had.co.nz/relational-data.html#outer-join):
+    -   `left_join(x, y)`: Keeps all rows in `x` (most common).
+    -   `right_join(x, y)`: Keeps all rows in `y`.
+    -   `full_join(x, y)`: Keeps all rows in `x` and `y`.
+
+**Filtering joins** affect observations, not variables.
+
+-   `semi_join(x, y)`: Keeps all observations in `x` that have a match
+    in `y`.
+-   `anti_join(x, y)`: Drops all observations in `x` that have a match
+    in `y`.
 
 –
 
-[Inner
-join](https://r4ds.had.co.nz/relational-data.html#mutating-joins): Drop
-unmatched rows.
+#### Inner join
+
+![](https://d33wubrfki0l68.cloudfront.net/3abea0b730526c3f053a3838953c35a0ccbe8980/7f29b/diagrams/join-inner.png)
 
 ``` r
 companies |>
@@ -65,9 +84,9 @@ companies |>
 #> 3            2 beta sells steel and installs solar panels energy
 ```
 
-[Outter joins](https://r4ds.had.co.nz/relational-data.html#outer-join):
+#### Outter joins
 
--   Keep all rows in `x` (most common).
+![](https://d33wubrfki0l68.cloudfront.net/9c12ca9e12ed26a7c5d2aa08e36d2ac4fb593f1e/79980/diagrams/join-outer.png)
 
 ``` r
 companies |>
@@ -78,11 +97,7 @@ companies |>
 #> 1            1 alpha sells solar panels and wind mills    energy    
 #> 2            2 beta sells steel and installs solar panels metallurgy
 #> 3            2 beta sells steel and installs solar panels energy
-```
 
--   Keep all rows in `y`
-
-``` r
 companies |>
   right_join(categories, by = "companies_id")
 #> # A tibble: 4 × 3
@@ -92,11 +107,7 @@ companies |>
 #> 2            2 beta sells steel and installs solar panels metallurgy 
 #> 3            2 beta sells steel and installs solar panels energy     
 #> 4            3 <NA>                                       agriculture
-```
 
--   Keep all rows in `x` and `y`
-
-``` r
 companies |>
   full_join(categories, by = "companies_id")
 #> # A tibble: 4 × 3
@@ -108,11 +119,41 @@ companies |>
 #> 4            3 <NA>                                       agriculture
 ```
 
--   [Duplicate
-    keys](https://r4ds.had.co.nz/relational-data.html#join-matches)
+#### Filtering joins
+
+![](https://d33wubrfki0l68.cloudfront.net/028065a7f353a932d70d2dfc82bc5c5966f768ad/85a30/diagrams/join-semi.png)
 
 ``` r
-# Duplicate keys in one table
+categories |> 
+  semi_join(companies)
+#> Joining, by = "companies_id"
+#> # A tibble: 3 × 2
+#>   companies_id sector    
+#>          <dbl> <chr>     
+#> 1            1 energy    
+#> 2            2 metallurgy
+#> 3            2 energy
+```
+
+![](https://d33wubrfki0l68.cloudfront.net/f29a85efd53a079cc84c14ba4ba6894e238c3759/c1408/diagrams/join-anti.png)
+
+``` r
+categories |> 
+  anti_join(companies)
+#> Joining, by = "companies_id"
+#> # A tibble: 1 × 2
+#>   companies_id sector     
+#>          <dbl> <chr>      
+#> 1            3 agriculture
+```
+
+### Duplicate keys
+
+-   Duplicate keys in one table
+
+![](https://d33wubrfki0l68.cloudfront.net/6faac3e996263827cb57fc5803df6192541a9a4b/c7d74/diagrams/join-one-to-many.png)
+
+``` r
 companies2 <- companies |>
   bind_rows(tibble(companies_id = 1L, information = "abc"))
 
@@ -126,8 +167,13 @@ companies2 |>
 #> 2            2 beta sells steel and installs solar panels metallurgy
 #> 3            2 beta sells steel and installs solar panels energy    
 #> 4            1 abc                                        energy
+```
 
-# Duplicate keys in both tables
+-   Duplicate keys in both tables
+
+![](https://d33wubrfki0l68.cloudfront.net/d37530bbf7749f48c02684013ae72b2996b07e25/37510/diagrams/join-many-to-many.png)
+
+``` r
 categories2 <- categories |>
   bind_rows(tibble(companies_id = 1L, sector = "xyz"))
 
@@ -145,37 +191,11 @@ companies2 |>
 #> 6            1 abc                                        xyz
 ```
 
-### Filtering joins
+### Validating keys
 
-Affect observations, not variables:
-
--   Keep all observations in `x` that have a match in `y`.
-
-``` r
-categories |> 
-  semi_join(companies)
-#> Joining, by = "companies_id"
-#> # A tibble: 3 × 2
-#>   companies_id sector    
-#>          <dbl> <chr>     
-#> 1            1 energy    
-#> 2            2 metallurgy
-#> 3            2 energy
-```
-
--   Drop all observations in `x` that have a match in `y`.
-
-``` r
-categories |> 
-  anti_join(companies)
-#> Joining, by = "companies_id"
-#> # A tibble: 1 × 2
-#>   companies_id sector     
-#>          <dbl> <chr>      
-#> 1            3 agriculture
-```
-
-### Validating keys to avoid [join problems](https://r4ds.had.co.nz/relational-data.html#join-problems)
+To avoid [join
+problems](https://r4ds.had.co.nz/relational-data.html#join-problems) you
+should validate some properties of the keys:
 
 -   All values of a primary key should be unique.
 

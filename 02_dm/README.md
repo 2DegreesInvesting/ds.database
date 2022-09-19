@@ -1,55 +1,47 @@
 
-``` r
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
-```
-
 # Relational data with dm
 
-Packages.
+The dm package:
+
+-   Makes it easy to create, visualize, check, and use complex datasets.
+-   Plays well with dplyr.
 
 ``` r
 library(dm, warn.conflicts = FALSE)
 library(dplyr, warn.conflicts = FALSE)
 ```
 
-Data.
+Example dataset with two tables.
 
 ``` r
 companies <- tribble(
-  # styler: off
   ~companies_id,                                 ~information,
               1,    "alpha sells solar panels and wind mills",
               2, "beta sells steel and installs solar panels",
-  # styler: on
 )
 
 categories <- tribble(
-  # styler: off
   ~companies_id,       ~sector,
               1,      "energy",
               2,  "metallurgy",
               2,      "energy",
-              3, "agriculture",
-  # styler: on
+              3, "agriculture",  # Bad
 )
 ```
 
-A data model (dm) is like a list.
+A data model (dm) is like a named list.
 
 ``` r
-database = dm(companies, categories)
+dm <- dm(companies, categories)
 
-database$companies
+dm$companies
 #> # A tibble: 2 × 2
 #>   companies_id information                               
 #>          <dbl> <chr>                                     
 #> 1            1 alpha sells solar panels and wind mills   
 #> 2            2 beta sells steel and installs solar panels
 
-database$categories
+dm$categories
 #> # A tibble: 4 × 2
 #>   companies_id sector     
 #>          <dbl> <chr>      
@@ -59,97 +51,114 @@ database$categories
 #> 4            3 agriculture
 ```
 
-For example, using the dm as a list you may examine keys constrains with
-dplyr.
+But also has with special features:
+
+-   It can store the relationships between tables via primary and
+    foreign keys.
 
 ``` r
-# No primary-key value should be duplicated
-database$companies |>
+dm2 <- dm |>
+  dm_add_pk(companies, companies_id) |>
+  dm_add_fk(categories, companies_id, companies)
+
+dm2
+#> ── Metadata ────────────────────────────────────────────────────────────────────
+#> Tables: `companies`, `categories`
+#> Columns: 4
+#> Primary keys: 1
+#> Foreign keys: 1
+```
+
+-   It makes it easy to draw and understand the relationship between
+    tables.
+
+``` r
+dm2 |>
+  dm_draw()
+```
+
+![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+
+-   It makes it easy to examine the constraints of you data:
+
+    -   Each value of a primary key should be unique.
+    -   Each value of a primary key should be not missing.
+    -   Each value of a foreign key should match a value in its primary
+        key.
+
+``` r
+dm2 |>
+  dm_examine_constraints()
+#> ! Unsatisfied constraints:
+#> • Table `categories`: foreign key `companies_id` into table `companies`: values of `categories$companies_id` not in `companies$companies_id`: 3 (1)
+```
+
+(Doing this “by hand” with dplyr is a lot harder.)
+
+``` r
+# Expect no duplicates
+# Good
+dm2$companies |>
   count(companies_id) |>
   filter(n > 1)
 #> # A tibble: 0 × 2
 #> # … with 2 variables: companies_id <dbl>, n <int>
-#> # ℹ Use `colnames()` to see all variable names
 
-# No primary-key value should be missing
-database$companies |>
+# Expect no missing values
+# Good
+dm2$companies |>
   filter(is.na(companies_id))
 #> # A tibble: 0 × 2
 #> # … with 2 variables: companies_id <dbl>, information <chr>
-#> # ℹ Use `colnames()` to see all variable names
 
-# Each foreign-key value should match a primary key value
-# Problem!
-categories |>
-  anti_join(companies, by = "companies_id")
+# Expect no miss-match
+# Bad
+dm2$categories |>
+  anti_join(dm2$companies, by = "companies_id")
 #> # A tibble: 1 × 2
 #>   companies_id sector     
 #>          <dbl> <chr>      
 #> 1            3 agriculture
-
-# Fix
-categories |>
-  filter(companies_id != 3) |> 
-  anti_join(companies, by = "companies_id")
-#> # A tibble: 0 × 2
-#> # … with 2 variables: companies_id <dbl>, sector <chr>
-#> # ℹ Use `colnames()` to see all variable names
 ```
 
-But the dm has dedicated features that make it easier to work with it.
+-   It makes it easy to join multiple tables.
 
 ``` r
-database
-#> ── Metadata ────────────────────────────────────────────────────────────────────
-#> Tables: `companies`, `categories`
-#> Columns: 4
-#> Primary keys: 0
-#> Foreign keys: 0
+dm2 |>
+  dm_flatten_to_tbl(.start = categories, .recursive = TRUE)
+#> # A tibble: 4 × 3
+#>   companies_id sector      information                               
+#>          <dbl> <chr>       <chr>                                     
+#> 1            1 energy      alpha sells solar panels and wind mills   
+#> 2            2 metallurgy  beta sells steel and installs solar panels
+#> 3            2 energy      beta sells steel and installs solar panels
+#> 4            3 agriculture <NA>
+```
 
-# Add the primary key (pk) and the foreign key (fk)
-database2 = database |>
-  dm_add_pk(companies, companies_id) |>
-  dm_add_fk(categories, companies_id, companies)
-database2
-#> ── Metadata ────────────────────────────────────────────────────────────────────
-#> Tables: `companies`, `categories`
-#> Columns: 4
-#> Primary keys: 1
-#> Foreign keys: 1
+-   It allows you to manipulate tables with functions from dplyr or
+    similar.
 
-# Examine constraints
-database2 |>
-  dm_examine_constraints()
-#> ! Unsatisfied constraints:
-#> • Table `categories`: foreign key `companies_id` into table `companies`: values of `categories$companies_id` not in `companies$companies_id`: 3 (1)
-# Fix
-database3 = database2 |>
+``` r
+dm3 <- dm2 |>
+  dm_zoom_to(categories) |> 
+  filter(companies_id != 3) |> 
+  dm_update_zoomed()
+
+# Same
+dm3 <- dm2 |> 
   dm_filter(categories = (companies_id != 3))
-database3 |>
+
+dm3 |> 
   dm_examine_constraints()
 #> ℹ All constraints satisfied.
-
-# Other cool things you can do
-database3 |>
-  dm_flatten_to_tbl(categories, .recursive = TRUE)
-#> # A tibble: 3 × 3
-#>   companies_id sector     information                               
-#>          <dbl> <chr>      <chr>                                     
-#> 1            1 energy     alpha sells solar panels and wind mills   
-#> 2            2 metallurgy beta sells steel and installs solar panels
-#> 3            2 energy     beta sells steel and installs solar panels
 ```
 
-You may persist the dm by saving it to an R object.
+Learn more: <https://cynkra.github.io/dm/>
 
-``` r
-path = tempfile(fileext = ".rds")
-saveRDS(database3, path)
-# And later read it back into R
-readRDS(path)
-#> ── Metadata ────────────────────────────────────────────────────────────────────
-#> Tables: `companies`, `categories`
-#> Columns: 4
-#> Primary keys: 1
-#> Foreign keys: 1
-```
+### Questions
+
+Can dm check:
+
+1.  constraints in columns other than the keys? E.g. allow only 1 or 0.
+2.  column type?
+3.  unique and composite unique constraints?
