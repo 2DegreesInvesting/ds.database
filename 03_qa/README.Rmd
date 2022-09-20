@@ -33,3 +33,28 @@ Few and popular tools:
 * Create an initial release.
 * Make a backward compatible change and release.
 * Make a backward incompatible change and release.
+
+Pakcages
+
+```{r}
+library(pointblank)
+library(dplyr)
+```
+
+Data
+
+```{r}
+companies <- tribble(
+  ~companies_id,                                 ~information,
+  1,    "alpha sells solar panels and wind mills",
+  2, "beta sells steel and installs solar panels",
+)
+
+categories <- tribble(
+  ~companies_id,       ~sector,
+  1,      "energy",
+  2,  "metallurgy",
+  2,      "energy",
+)
+```
+
