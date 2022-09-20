@@ -1,0 +1,5 @@
+dataset,column,definition,type,enforce_unique,allow_missing
+companies,companies_id,identifier of each company,character,TRUE,FALSE
+companies,information,information about each company,character,FALSE,FALSE
+categories,companies_id,identifier of each company,character,TRUE,FALSE
+categories,sector,a sector in which a company is does business,character,FALSE,FALSE

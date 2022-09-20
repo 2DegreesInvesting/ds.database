@@ -40,7 +40,7 @@ categories <- tibble::tribble(
               1,     "energy",
               2, "metallurgy",
               2,     "energy",
-              3,     "energy"
+              3,     "energy", # Problem!
 )
 # styler: on
 ```
@@ -101,16 +101,9 @@ categories |>
 
 Secondary workflows: Generally I prefer lower-level, developer oriented tools
 
-```{r error=TRUE}
-data = tibble(x = "1")
+* Unit testing
 
-data |> col_is_numeric("x")
-
-data |> test_col_is_numeric("x")
-
-# I prefer
-data[["x"]] |> is.numeric()
-
+```{r}
 testthat::test_that("is numeric", {
   data |> expect_col_is_numeric("x")
 })
@@ -119,3 +112,37 @@ testthat::test_that("is numeric", {
   data[["x"]] |> is.numeric() |> testthat::expect_true()
 })
 ```
+
+* Conditional code
+
+```{r}
+data |> test_col_is_numeric("x")
+
+data[["x"]] |> is.numeric()
+```
+
+## A developer-oriented approach
+
+`dictionary`: A developer-stakeholder interface to gather requirements.
+
+```{r}
+dictionary = readr::read_tsv(here::here("data-raw", "dictionary.tsv"))
+dictionary
+```
+
+Translating requirements to code
+
+```{r}
+library(testthat)
+
+# tests/testthat/test-companies.R
+test_that("`companies_id` is unique", {
+  expect_equal(anyDuplicated(companies$companies_id), 0L)
+})
+
+test_that("`companies_id` is complete", {
+  expect_false(anyNA(companies$companies_id))
+})
+
+```
+

@@ -96,11 +96,12 @@ data = tibble(x = "1")
 
 data |> col_is_numeric("x")
 
+# Tests
 data |> test_col_is_numeric("x")
 
-# I prefer
 data[["x"]] |> is.numeric()
 
+# Expectations
 testthat::test_that("is numeric", {
   data |> expect_col_is_numeric("x")
 })

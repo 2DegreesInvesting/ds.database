@@ -53,7 +53,7 @@ Objectives:
 
 -   Validate data quality with the [pointblank
     package](https://rich-iannone.github.io/pointblank/).
--   Other ways to validate data.
+-   Validate data quality with lower-level, developer-oriented tools.
 
 ## Resources
 
