@@ -94,28 +94,79 @@ tools
 -   Unit testing
 
 ``` r
+data <- tibble(x = "1")
+
 testthat::test_that("is numeric", {
   data |> expect_col_is_numeric("x")
 })
+#> ── Failure (<text>:4:3): is numeric ────────────────────────────────────────────
+#> Failure to validate that column `x` is of type: numeric.
+#> The `expect_col_is_numeric()` validation failed beyond the absolute threshold level (1).
+#> * failure level (1) >= failure threshold (1)
+#> Error in `reporter$stop_if_needed()`:
+#> ! Test failed
 
 testthat::test_that("is numeric", {
   data[["x"]] |> is.numeric() |> testthat::expect_true()
 })
+#> ── Failure (<text>:8:3): is numeric ────────────────────────────────────────────
+#> is.numeric(data[["x"]]) is not TRUE
+#> 
+#> `actual`:   FALSE
+#> `expected`: TRUE
+#> Error in `reporter$stop_if_needed()`:
+#> ! Test failed
 ```
 
 -   Conditional code
 
 ``` r
 data |> test_col_is_numeric("x")
+#> [1] FALSE
 
 data[["x"]] |> is.numeric()
+#> [1] FALSE
 ```
 
-## [Writing an `agent` to yaml](https://rich-iannone.github.io/pointblank/reference/yaml_write.html#writing-an-agent-object-to-a-yaml-file)
+### Interfaces for gathering requirements
+
+-   [Write an `agent` to
+    yaml](https://rich-iannone.github.io/pointblank/reference/yaml_write.html#writing-an-agent-object-to-a-yaml-file)
 
 ``` r
-categories |> 
-  create_agent() |> 
+create_agent(~categories) |> 
   validate_categories() |> 
-  write_yaml(filename = "requirements.yml")
+  yaml_write(filename = "requirements.yml")
+#> ✔ The agent YAML file has been written to `requirements.yml`
 ```
+
+    type: agent
+    tbl: ~categories
+    tbl_name: ~categories
+    label: '[2022-09-20|14:52:02]'
+    lang: en
+    locale: en
+    steps:
+    - col_vals_not_null:
+        columns: vars(companies_id)
+    - col_vals_in_set:
+        columns: vars(companies_id)
+        set:
+        - 1.0
+        - 2.0
+        actions:
+          warn_count: 1.0
+    - col_is_numeric:
+        columns: vars(companies_id)
+    - rows_distinct:
+        columns: vars(companies_id, sector)
+
+-   Use a data dictionary
+    ([example](https://docs.google.com/spreadsheets/d/1WWuwgZXFg2EfnfwBB6oR4JNhykYmRq8kmEoIVsYhafA/edit#gid=1425673786))
+
+| dataset    | column       | definition                                   | type      | enforce_unique | allow_missing |
+|:-----------|:-------------|:---------------------------------------------|:----------|:---------------|:--------------|
+| companies  | companies_id | identifier of each company                   | character | TRUE           | FALSE         |
+| companies  | information  | information about each company               | character | FALSE          | FALSE         |
+| categories | companies_id | identifier of each company                   | character | TRUE           | FALSE         |
+| categories | sector       | a sector in which a company is does business | character | FALSE          | FALSE         |
