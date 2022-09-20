@@ -45,9 +45,15 @@ Objectives:
 
 -   Create, visualize, check, and use complex datasets.
 
-### Next (TBC)
+### Validating data quality
 
--   Work with a lazy, hosted database.
+This meetup covers how to validate the quality of a dataset.
+
+Objectives:
+
+-   Validate data quality with the [pointblank
+    package](https://rich-iannone.github.io/pointblank/).
+-   Other ways to validate data.
 
 ## Resources
 

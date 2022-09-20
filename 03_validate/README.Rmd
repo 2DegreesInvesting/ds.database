@@ -1,18 +1,18 @@
 ---
-output: html_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
-  eval = TRUE,
+  eval = FALSE,
   collapse = TRUE,
   comment = "#>"
 )
 ```
 
-# Validating data quality with [pointblank](https://rich-iannone.github.io/pointblank/)
+# Validating data quality
 
-### Overview
+## The [pointblank](https://rich-iannone.github.io/pointblank/) package
 
 ![](data-validation-workflow.png)
 
