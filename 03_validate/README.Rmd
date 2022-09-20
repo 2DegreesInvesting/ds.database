@@ -1,10 +1,11 @@
 ---
-output: github_document
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
-  eval = FALSE,
+  eval = TRUE,
+  cache = TRUE,
   collapse = TRUE,
   comment = "#>"
 )
@@ -103,7 +104,9 @@ Secondary workflows: Generally I prefer lower-level, developer oriented tools
 
 * Unit testing
 
-```{r}
+```{r error = TRUE}
+data <- tibble(x = "1")
+
 testthat::test_that("is numeric", {
   data |> expect_col_is_numeric("x")
 })
@@ -124,9 +127,8 @@ data[["x"]] |> is.numeric()
 ## [Writing an `agent` to yaml](https://rich-iannone.github.io/pointblank/reference/yaml_write.html#writing-an-agent-object-to-a-yaml-file)
 
 ```{r}
-categories |> 
-  create_agent() |> 
+create_agent(~categories) |> 
   validate_categories() |> 
-  write_yaml(filename = "requirements.yml")
+  yaml_write(filename = "requirements.yml")
 ```
 

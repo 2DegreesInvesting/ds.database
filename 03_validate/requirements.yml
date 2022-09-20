@@ -1,0 +1,20 @@
+type: agent
+tbl: ~categories
+tbl_name: ~categories
+label: '[2022-09-20|13:35:15]'
+lang: en
+locale: en
+steps:
+- col_vals_not_null:
+    columns: vars(companies_id)
+- col_vals_in_set:
+    columns: vars(companies_id)
+    set:
+    - 1.0
+    - 2.0
+    actions:
+      warn_count: 1.0
+- col_is_numeric:
+    columns: vars(companies_id)
+- rows_distinct:
+    columns: vars(companies_id, sector)
