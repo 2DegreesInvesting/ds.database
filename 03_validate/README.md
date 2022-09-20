@@ -29,7 +29,7 @@ categories <- tibble::tribble(
               1,     "energy",
               2, "metallurgy",
               2,     "energy",
-              3,     "energy"
+              3,     "energy", # Problem!
 )
 # styler: on
 ```
@@ -57,7 +57,7 @@ plan |>
 Helper
 
 ``` r
-validate_companies <- function(x) {
+validate_categories <- function(x) {
   x |>
     col_vals_not_null(columns = "companies_id") |>
     col_vals_in_set(
@@ -77,7 +77,7 @@ Main workflows:
 ``` r
 categories |> 
   create_agent() |> 
-  validate_companies() |> 
+  validate_categories() |> 
   interrogate()
 ```
 
@@ -85,23 +85,15 @@ categories |>
 
 ``` r
 categories |> 
-  validate_companies()
+  validate_categories()
 ```
 
 Secondary workflows: Generally I prefer lower-level, developer oriented
 tools
 
+-   Unit testing
+
 ``` r
-data = tibble(x = "1")
-
-data |> col_is_numeric("x")
-
-# Tests
-data |> test_col_is_numeric("x")
-
-data[["x"]] |> is.numeric()
-
-# Expectations
 testthat::test_that("is numeric", {
   data |> expect_col_is_numeric("x")
 })
@@ -109,4 +101,21 @@ testthat::test_that("is numeric", {
 testthat::test_that("is numeric", {
   data[["x"]] |> is.numeric() |> testthat::expect_true()
 })
+```
+
+-   Conditional code
+
+``` r
+data |> test_col_is_numeric("x")
+
+data[["x"]] |> is.numeric()
+```
+
+## [Writing an `agent` to yaml](https://rich-iannone.github.io/pointblank/reference/yaml_write.html#writing-an-agent-object-to-a-yaml-file)
+
+``` r
+categories |> 
+  create_agent() |> 
+  validate_categories() |> 
+  write_yaml(filename = "requirements.yml")
 ```

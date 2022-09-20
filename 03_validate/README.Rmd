@@ -68,7 +68,7 @@ plan |>
 Helper
 
 ```{r}
-validate_companies <- function(x) {
+validate_categories <- function(x) {
   x |>
     col_vals_not_null(columns = "companies_id") |>
     col_vals_in_set(
@@ -88,7 +88,7 @@ Main workflows:
 ```{r validate = TRUE}
 categories |> 
   create_agent() |> 
-  validate_companies() |> 
+  validate_categories() |> 
   interrogate()
 ```
 
@@ -96,7 +96,7 @@ categories |>
 
 ```{r validate = TRUE}
 categories |> 
-  validate_companies()
+  validate_categories()
 ```
 
 Secondary workflows: Generally I prefer lower-level, developer oriented tools
@@ -121,28 +121,12 @@ data |> test_col_is_numeric("x")
 data[["x"]] |> is.numeric()
 ```
 
-## A developer-oriented approach
-
-`dictionary`: A developer-stakeholder interface to gather requirements.
+## [Writing an `agent` to yaml](https://rich-iannone.github.io/pointblank/reference/yaml_write.html#writing-an-agent-object-to-a-yaml-file)
 
 ```{r}
-dictionary = readr::read_tsv(here::here("data-raw", "dictionary.tsv"))
-dictionary
-```
-
-Translating requirements to code
-
-```{r}
-library(testthat)
-
-# tests/testthat/test-companies.R
-test_that("`companies_id` is unique", {
-  expect_equal(anyDuplicated(companies$companies_id), 0L)
-})
-
-test_that("`companies_id` is complete", {
-  expect_false(anyNA(companies$companies_id))
-})
-
+categories |> 
+  create_agent() |> 
+  validate_categories() |> 
+  write_yaml(filename = "requirements.yml")
 ```
 
