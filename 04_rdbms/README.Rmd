@@ -29,9 +29,10 @@ library(here)
 If you have an RDBMS (an SQLite file) ...
 
 ```{r}
-# See arguments to dbConnect() or the relevant driver at ?RSQLite::RSQLite()
+# See arguments to dbConnect() at ?RSQLite::RSQLite()
 database_file <- here("04_rdbms", "database.sqlite")
-connection <- DBI::dbConnect(RSQLite::SQLite(), dbname = database_file)
+connection <- RSQLite::SQLite() |> 
+  DBI::dbConnect(dbname = database_file)
 connection
 ```
 
