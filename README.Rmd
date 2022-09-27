@@ -63,6 +63,16 @@ Objectives:
 * Validate data quality with the [pointblank package](https://rich-iannone.github.io/pointblank/).
 * Validate data quality with lower-level, developer-oriented tools.
 
+### Using a Relational Database Management System (RDBMS)
+
+This meetup covers how to copy a data model to a RDBMS and how to later use it.
+
+Objectives:
+
+* Connect to a RDBMS (an .sqlite file).
+* Copy a data model to a RDBMS.
+* Use the RDBMS.
+
 ## Resources
 
 * YouTube [playlist](https://bit.ly/ds-incubator-videos).
