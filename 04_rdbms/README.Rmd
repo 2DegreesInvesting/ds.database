@@ -65,13 +65,15 @@ dm <- dm(companies, categories)
 * Sets foreign key constraints are set on MSSQL and Postgres databases.
 
 ```{r}
-copy_dm_to(connection, dm, temporary = FALSE)
+connection |> 
+  copy_dm_to(dm, temporary = FALSE)
 ```
 
 Once you're finish working with the database, you should disconnect.
 
 ```{r}
-DBI::dbDisconnect(connection)
+connection |> 
+  DBI::dbDisconnect()
 ```
 
 ### Using the RDBMS
@@ -80,7 +82,8 @@ Connect to the RDBMS.
 
 ```{r}
 database_file <- here("04_rdbms", "database.sqlite")
-connection <- RSQLite::SQLite() |> DBI::dbConnect(dbname = database_file)
+connection <- RSQLite::SQLite() |> 
+  DBI::dbConnect(dbname = database_file)
 ```
 
 Use it with [dplyr](https://dplyr.tidyverse.org/) (and [dbplyr](https://dbplyr.tidyverse.org/) in the backend) (meetup 1).
@@ -88,10 +91,13 @@ Use it with [dplyr](https://dplyr.tidyverse.org/) (and [dbplyr](https://dbplyr.t
 ```{r}
 connection |> DBI::dbListTables()
 
-companies <- connection |> dplyr::tbl("companies")
-categories <- connection |> dplyr::tbl("categories")
+companies <- connection |> 
+  dplyr::tbl("companies")
+categories <- connection |> 
+  dplyr::tbl("categories")
 
-companies |> left_join(categories, by = "companies_id")
+companies |> 
+  left_join(categories, by = "companies_id")
 ```
 
 Use it with [dm](https://github.com/cynkra/dm) (meetup 2).
@@ -107,14 +113,17 @@ companies_dm <- function(connection) {
     dm_add_fk(categories, companies_id, companies)
 }
 
-dm <- companies_dm(connection)
+dm <- connection |> 
+  companies_dm()
 dm
 
-dm |> dm_flatten_to_tbl(.start = categories)
+dm |> 
+  dm_flatten_to_tbl(.start = categories)
 ```
 
 ```{r}
-connection |> DBI::dbDisconnect()
+connection |> 
+  DBI::dbDisconnect()
 ```
 
 ```{r include=FALSE}

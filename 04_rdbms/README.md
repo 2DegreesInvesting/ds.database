@@ -18,9 +18,10 @@ library(here)
 If you have an RDBMS (an SQLite file) …
 
 ``` r
-# See arguments to dbConnect() or the relevant driver at ?RSQLite::RSQLite()
+# See arguments to dbConnect() at ?RSQLite::RSQLite()
 database_file <- here("04_rdbms", "database.sqlite")
-connection <- DBI::dbConnect(RSQLite::SQLite(), dbname = database_file)
+connection <- RSQLite::SQLite() |> 
+  DBI::dbConnect(dbname = database_file)
 connection
 #> <SQLiteConnection>
 #>   Path: /home/rstudio/git/ds.database/04_rdbms/database.sqlite
@@ -58,13 +59,15 @@ dm <- dm(companies, categories)
     databases.
 
 ``` r
-copy_dm_to(connection, dm, temporary = FALSE)
+connection |> 
+  copy_dm_to(dm, temporary = FALSE)
 ```
 
 Once you’re finish working with the database, you should disconnect.
 
 ``` r
-DBI::dbDisconnect(connection)
+connection |> 
+  DBI::dbDisconnect()
 ```
 
 ### Using the RDBMS
@@ -73,7 +76,8 @@ Connect to the RDBMS.
 
 ``` r
 database_file <- here("04_rdbms", "database.sqlite")
-connection <- RSQLite::SQLite() |> DBI::dbConnect(dbname = database_file)
+connection <- RSQLite::SQLite() |> 
+  DBI::dbConnect(dbname = database_file)
 ```
 
 Use it with [dplyr](https://dplyr.tidyverse.org/) (and
@@ -83,10 +87,13 @@ Use it with [dplyr](https://dplyr.tidyverse.org/) (and
 connection |> DBI::dbListTables()
 #> [1] "categories" "companies"
 
-companies <- connection |> dplyr::tbl("companies")
-categories <- connection |> dplyr::tbl("categories")
+companies <- connection |> 
+  dplyr::tbl("companies")
+categories <- connection |> 
+  dplyr::tbl("categories")
 
-companies |> left_join(categories, by = "companies_id")
+companies |> 
+  left_join(categories, by = "companies_id")
 #> # Source:   SQL [3 x 3]
 #> # Database: sqlite 3.39.2 [/home/rstudio/git/ds.database/04_rdbms/database.sqlite]
 #>   companies_id information                                sector    
@@ -109,7 +116,8 @@ companies_dm <- function(connection) {
     dm_add_fk(categories, companies_id, companies)
 }
 
-dm <- companies_dm(connection)
+dm <- connection |> 
+  companies_dm()
 dm
 #> ── Table source ────────────────────────────────────────────────────────────────
 #> src:  sqlite 3.39.2 [/home/rstudio/git/ds.database/04_rdbms/database.sqlite]
@@ -119,7 +127,8 @@ dm
 #> Primary keys: 1
 #> Foreign keys: 1
 
-dm |> dm_flatten_to_tbl(.start = categories)
+dm |> 
+  dm_flatten_to_tbl(.start = categories)
 #> # Source:   SQL [3 x 3]
 #> # Database: sqlite 3.39.2 [/home/rstudio/git/ds.database/04_rdbms/database.sqlite]
 #>   companies_id sector     information                               
@@ -130,5 +139,6 @@ dm |> dm_flatten_to_tbl(.start = categories)
 ```
 
 ``` r
-connection |> DBI::dbDisconnect()
+connection |> 
+  DBI::dbDisconnect()
 ```
