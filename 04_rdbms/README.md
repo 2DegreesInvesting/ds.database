@@ -4,11 +4,10 @@
 Packages.
 
 ``` r
-library(dm, warn.conflicts = FALSE)
-library(dplyr, warn.conflicts = FALSE)
 library(DBI)
 library(RSQLite)
-
+library(dm, warn.conflicts = FALSE)
+library(dplyr, warn.conflicts = FALSE)
 library(here)
 #> here() starts at /home/rstudio/git/ds.database
 ```
