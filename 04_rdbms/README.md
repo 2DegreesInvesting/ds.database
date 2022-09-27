@@ -1,5 +1,5 @@
 
-# Using the dm package with a Relational Database Management System (RDBMS)
+# Using a Relational Database Management System (RDBMS)
 
 Packages.
 
@@ -21,11 +21,11 @@ Database Management System (RDBMS).
 
 ``` r
 # See arguments to dbConnect() or the relevant driver at ?RSQLite::RSQLite()
-database_file <- here("04_remote", "database.sqlite")
+database_file <- here("04_rdbms", "database.sqlite")
 connection <- DBI::dbConnect(RSQLite::SQLite(), dbname = database_file)
 connection
 #> <SQLiteConnection>
-#>   Path: /home/rstudio/git/ds.database/04_remote/database.sqlite
+#>   Path: /home/rstudio/git/ds.database/04_rdbms/database.sqlite
 #>   Extensions: TRUE
 ```
 
@@ -72,7 +72,7 @@ companies_dm <- function(connection) {
     dm_add_fk(categories, companies_id, companies)
 }
 
-database_file <- here("04_remote", "database.sqlite")
+database_file <- here("04_rdbms", "database.sqlite")
 connection <- DBI::dbConnect(RSQLite::SQLite(), dbname = database_file)
 
 dm <- companies_dm(connection)
@@ -80,7 +80,7 @@ dm |> dm_examine_constraints()
 #> ℹ All constraints satisfied.
 dm |> dm_flatten_to_tbl(.start = categories)
 #> # Source:   SQL [3 x 3]
-#> # Database: sqlite 3.39.2 [/home/rstudio/git/ds.database/04_remote/database.sqlite]
+#> # Database: sqlite 3.39.2 [/home/rstudio/git/ds.database/04_rdbms/database.sqlite]
 #>   companies_id sector     information                               
 #>          <dbl> <chr>      <chr>                                     
 #> 1            1 energy     alpha sells solar panels and wind mills   

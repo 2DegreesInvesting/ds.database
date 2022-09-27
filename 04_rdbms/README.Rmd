@@ -11,7 +11,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Using the dm package with a Relational Database Management System (RDBMS)
+# Using a Relational Database Management System (RDBMS)
 
 Packages.
 
@@ -31,7 +31,7 @@ The dm package make it easy to deploy a data model to a Relational Database Mana
 
 ```{r}
 # See arguments to dbConnect() or the relevant driver at ?RSQLite::RSQLite()
-database_file <- here("04_remote", "database.sqlite")
+database_file <- here("04_rdbms", "database.sqlite")
 connection <- DBI::dbConnect(RSQLite::SQLite(), dbname = database_file)
 connection
 ```
@@ -78,7 +78,7 @@ companies_dm <- function(connection) {
     dm_add_fk(categories, companies_id, companies)
 }
 
-database_file <- here("04_remote", "database.sqlite")
+database_file <- here("04_rdbms", "database.sqlite")
 connection <- DBI::dbConnect(RSQLite::SQLite(), dbname = database_file)
 
 dm <- companies_dm(connection)
