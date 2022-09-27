@@ -64,7 +64,8 @@ Objectives:
 
 -   Connect to a RDBMS (an .sqlite file).
 -   Copy a data model to a RDBMS.
--   Use the RDBMS.
+-   Use the RDBMS with dplyr.
+-   Use the RDBMS with dm.
 
 ## Resources
 
