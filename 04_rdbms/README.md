@@ -62,7 +62,11 @@ dm <- dm(companies, categories)
 
 ``` r
 copy_dm_to(connection, dm, temporary = FALSE)
+```
 
+Once you’re finish working with the database, you should disconnect.
+
+``` r
 DBI::dbDisconnect(connection)
 ```
 
@@ -72,7 +76,7 @@ Connect to the RDBMS.
 
 ``` r
 database_file <- here("04_rdbms", "database.sqlite")
-connection <- DBI::dbConnect(RSQLite::SQLite(), dbname = database_file)
+connection <- RSQLite::SQLite() |> DBI::dbConnect(dbname = database_file)
 ```
 
 Use it with [dplyr](https://dplyr.tidyverse.org/) (and
@@ -127,8 +131,6 @@ dm |> dm_flatten_to_tbl(.start = categories)
 #> 2            2 metallurgy beta sells steel and installs solar panels
 #> 3            2 energy     beta sells steel and installs solar panels
 ```
-
-Once you’re finish working with the database, you should disconnect.
 
 ``` r
 connection |> DBI::dbDisconnect()
