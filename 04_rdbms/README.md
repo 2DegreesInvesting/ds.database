@@ -13,9 +13,6 @@ library(here)
 #> here() starts at /home/rstudio/git/ds.database
 ```
 
-The dm package make it easy to deploy a data model to a Relational
-Database Management System (RDBMS).
-
 ### Deploy a data model to a RDBMS
 
 If you have an RDBMS (an SQLite file) …
